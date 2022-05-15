@@ -1,7 +1,7 @@
 import Button from './Button';
 import HandButton from './HandButton';
 import HandIcon from './HandIcon';
-import { compareHand, generateRandomHand } from './utils';
+import { compareHand, generateRandomHand } from '../utils';
 import { useState } from 'react';
 
 //승패 판단
