@@ -6,13 +6,13 @@
   text-align: center;
   cursor: pointer;
   background-color: transparent;
-  background-image: url("../IMGS/purple.svg");
+  background-image: url(../IMGS/purple.svg);
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: 50%;
   background-size: contain;
 }
 
-.HandButton .HandButton-icon {
+.HandButton-icon {
   opacity: 0.45;
   width: 55px;
   height: 55px;

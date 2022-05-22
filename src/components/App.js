@@ -3,12 +3,18 @@ import HandButton from './HandButton';
 import HandIcon from './HandIcon';
 import { compareHand, generateRandomHand } from '../utils';
 import { useState } from 'react';
+import './App.css';
+import './HandButton.css';
 
 //승패 판단
 function getResult(me, other) {
   const comparison = compareHand(me, other);
-  if (comparison > 0) return '승리';
-  if (comparison < 0) return '패배';
+  if (comparison > 0) {
+    return '승리';
+  }
+  if (comparison < 0) {
+    return '패배';
+  }
   return '무승부';
 }
 
@@ -21,6 +27,8 @@ function App() {
   const [score, setScore] = useState(0);              //내 스코어 state
   const [otherScore, setOtherScore] = useState(0);    //상대방 스코어 state
   const [bet, setBet] = useState(1);                  //점수 배팅 state
+  const [won, setWon] = useState(null);               //나의 승리 state (상태에 따라서 className 적용)
+  const [otherWon, setOtherWon] = useState(null);     //상대 승리 state (상태에 따라서 className 적용)
 
   //가위바위보 버튼 클릭
   const handleButtonClick = (nextHand) => {
@@ -30,8 +38,18 @@ function App() {
     setHand(nextHand);
     setOther(nextOther);
     setGameHistory([...gameHistory, nextHistoryItem]);  //승부 기록 추가
-    if (comparison > 0) return setScore(score + bet);            //승리 시, 내 점수 + 베팅 점수
-    if (comparison > 0) return setOtherScore(otherScore + bet);  //패배 시, 상대 점수 + 베팅 점수
+    if (comparison > 0) {
+      setWon(true);
+      setOtherWon(false);
+      setScore(score + bet);            //승리 시, 내 점수 + 베팅 점수
+    } else if (comparison < 0) {
+      setWon(false);
+      setOtherWon(true);
+      setOtherScore(otherScore + bet);  //패배 시, 상대 점수 + 베팅 점수
+    } else {
+      setWon(false);
+      setOtherWon(false);
+    }
   };
 
   //처음부터(초기화)
@@ -42,6 +60,8 @@ function App() {
     setScore(0);
     setOtherScore(0);
     setBet(1);
+    setWon(null);
+    setOtherWon(null);
   };
 
   //점수 베팅
@@ -56,19 +76,47 @@ function App() {
   };
 
   return (
-    <div>
-      <Button onClick={handleClearClick}>처음부터</Button>
-      <div>
-        <p>{score} : {otherScore}</p>
+    <div className='App'>
+      <h1>가위바위보</h1>
+      <Button className='App-reset' onClick={handleClearClick}></Button>
+
+      <div className='App-scores'>
+        <div className='Score'>
+          <p className='Score-num'>{score}</p>
+          <p className='Score-name'>나</p>
+        </div>
+        <p className='App-versus'>:</p>
+        <div className='Score'>
+          <p className='Score-num'>{otherScore}</p>
+          <p className='Score-name'>상대</p>
+        </div>
       </div>
-      <p>{getResult(hand, other)}</p>
-      <div>
-        <HandIcon value={hand} />
-        VS
-        <HandIcon value={other} />
+
+      <div className='Box'>
+        <div className='Box-inner'>
+
+          <div className='App-hands'>
+            <div className={won ? 'Hand-winner' : 'Hand'}>
+              <HandIcon className='Hand-icon' value={hand} />
+            </div>
+            <p className='App-versus'>VS</p>
+            <div className={otherWon ? 'Hand-winner' : 'Hand'}>
+              <HandIcon className='Hand-icon' value={other} />
+            </div>
+          </div>
+
+          <div className='App-bet'>
+            <span>배점</span><input onChange={handleBetChange} type="number" value={bet} min={1} max={9}></input>
+          </div>
+
+          <div className='App-history'>
+            <h2>승부 기록</h2>
+            <p>{gameHistory.join(', ')}</p>
+          </div>
+
+        </div>
       </div>
-      <input onChange={handleBetChange} type="number" value={bet} min={1} max={9}></input>
-      <p>승부 기록: {gameHistory.join(', ')}</p>
+
       <div>
         <HandButton value="rock" onClick={handleButtonClick} />
         <HandButton value="scissor" onClick={handleButtonClick} />
